@@ -92,6 +92,7 @@ const sendNotificationToMultipleDevices = async () => {
 router.route("/fcmpushnotificationoutvendor").post(async (req, res) => {
   sendNotificationToMultipleDevices();
 });
+
 //Outside vendor
 router.route("/outvendor").post(async (req, res) => {
   const { number, password, fcmtoken } = req.body;
@@ -218,6 +219,18 @@ router.route("/edittechnician/:id").post(async (req, res) => {
 //get alltechnicain
 router.route("/getalltechnician").get(async (req, res) => {
   let technician = await technicianmodel.find({}).sort({ _id: -1 });
+  if (technician) {
+    return res.status(200).json({ technician: technician });
+  } else {
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+});
+//get alltechnicain
+router.route("/getalltechnicianfordsr").get(async (req, res) => {
+  let technician = await technicianmodel
+    .find({})
+    .select("Type category city vhsname smsname ")
+    .sort({ _id: -1 });
   if (technician) {
     return res.status(200).json({ technician: technician });
   } else {

@@ -201,21 +201,19 @@ function Enquiryadd() {
       },
     ];
     try {
-      const response = await axios.post(apiURL, requestData, {
-        headers: {
-          "access-token": accessToken,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        "https://api.vijayhomeservicebengaluru.in/send-message",
+        {
+          mobile: contactNumber,
+          msg: convertedText,
+        }
+      );
 
       if (response.status === 200) {
-        
-        setWhatsappTemplate(response.data);
-      } else {
-        console.error("API call unsuccessful. Status code:", response.status);
+        // alert("Whats app message sent successfully");
       }
     } catch (error) {
-      console.error("Error making API call:", error);
+      console.error(error);
     }
   };
 
@@ -439,7 +437,6 @@ function Enquiryadd() {
                             selectedService ? selectedService.serviceName : ""
                           );
                         }}
-                        
                       >
                         <option>---SELECT---</option>
                         {serviceData.map((item) => (

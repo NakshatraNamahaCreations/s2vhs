@@ -19,7 +19,6 @@ function Surveycategory() {
   const localizer = momentLocalizer(moment);
   const navigate = useNavigate();
   const apiURL = process.env.REACT_APP_API_URL;
-  const [surveycatagoryData, setsurveycatagoryData] = useState([]);
 
   // Get the current date
   const currentDate = new Date();
@@ -44,10 +43,6 @@ function Surveycategory() {
   };
 
   useEffect(() => {
-    SurveyCatagory();
-  }, []);
-
-  useEffect(() => {
     postallajob();
   }, [category, rstart, rend]);
 
@@ -58,17 +53,7 @@ function Surveycategory() {
       endDate: rend,
     });
     if ((res.status = 200)) {
-
-      console.log("survy dta",res.data?.enquiryfollowup)
       setsurveycatdata(res.data?.enquiryfollowup);
-    }
-  };
-
-  const SurveyCatagory = async () => {
-    let res = await axios.get(apiURL + "/getsurveydata");
-    if (res.status === 200) {
-
-      setsurveycatagoryData(res.data?.enquiryfollowup);
     }
   };
 
@@ -87,13 +72,8 @@ function Surveycategory() {
 
   const handleSelectEvent = (event) => {
     const selectedDate = moment(event.start).format("YYYY-MM-DD");
-    const selectedData = surveycatagoryData?.filter(
-      (item) => item.date === selectedDate
-    );
 
-    navigate(`/surveydatatable/${selectedDate}/${category}`, {
-      state: { data: selectedData },
-    });
+    navigate(`/surveydatatable/${selectedDate}/${category}`);
   };
 
   function calculateTotalCount(array) {
@@ -108,7 +88,7 @@ function Surveycategory() {
     return totalCount;
   }
 
-  const totalCount = calculateTotalCount(surveycatagoryData);
+  const totalCount = calculateTotalCount(surveycatdata);
 
   return (
     <div className="web">

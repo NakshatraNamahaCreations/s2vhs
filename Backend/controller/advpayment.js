@@ -1,17 +1,10 @@
 const advPaymentModal = require("../model/advpayment");
-const mongoose = require('mongoose');
 
 class advPayment {
   async advPayment(req, res) {
     try {
-      let {
-        paymentDate,
-        paymentMode,
-        amount,
-        Comment,
-        userID,
-        EnquiryId,
-      } = req.body;
+      let { paymentDate, paymentMode, amount, Comment, userID, EnquiryId } =
+        req.body;
       if (!paymentDate || !paymentMode || !amount) {
         return res.status(500).json({ error: "Field must not be empty" });
       } else {
@@ -41,21 +34,18 @@ class advPayment {
     try {
       const customerId = req.params.customerId;
 
- 
-
       const payments = await advPaymentModal.findOne({ userID: customerId });
 
-    
       if (!payments || payments.length === 0) {
-        return res.status(404).json({ error: 'Payment details not found' });
+        return res.status(404).json({ error: "Payment details not found" });
       }
 
       return res.status(200).json({ payments });
     } catch (error) {
-      console.error('An error occurred:', error.message);
+      console.error("An error occurred:", error.message);
       return res
         .status(500)
-        .json({ error: 'An error occurred', message: error.message });
+        .json({ error: "An error occurred", message: error.message });
     }
   }
 }

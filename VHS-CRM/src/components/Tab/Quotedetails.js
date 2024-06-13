@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "../layout/Header";
-import { Link, useLocation, useNavigate,  } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import Quotenav from "../Quotenav";
 import moment from "moment";
@@ -67,11 +67,8 @@ function Quotedetails() {
     let res = await axios.get(apiURL + `/getfilterwithEnquiryid/${EnquiryId}`);
     if ((res.status = 200)) {
       setquotedata(res.data?.quote);
-
     }
   };
-
-
 
   useEffect(() => {
     if (quotedata.length > 0) {
@@ -80,13 +77,11 @@ function Quotedetails() {
         initialNetTotal >= total
           ? quotedata[0]?.netTotal
           : Gst || adjustments
-            ? total + Gst - parseFloat(quotedata[0]?.adjustments)
-            : 0 // Replace 0 with a default value if needed
+          ? total + Gst - parseFloat(quotedata[0]?.adjustments)
+          : 0 // Replace 0 with a default value if needed
       );
-
     }
   }, [quotedata, quotepagedata]);
-
 
   useEffect(() => {
     getresponse();
@@ -110,10 +105,8 @@ function Quotedetails() {
   const getenquiryadd = async () => {
     let res = await axios.get(apiURL + `/getwithenqid/${EnquiryId}`);
     if ((res.status = 200)) {
-      setenquirydata(
-        res.data?.enquiryadd
-      );
-      console.log("res.data?.enquiryadd", res.data?.enquiryadd)
+      setenquirydata(res.data?.enquiryadd);
+      console.log("res.data?.enquiryadd", res.data?.enquiryadd);
     }
   };
 
@@ -141,15 +134,13 @@ function Quotedetails() {
         };
 
         await axios(config).then(function (response) {
-
-
           if (response.status === 200) {
             console.log("success");
             if (response1 === "Confirmed") {
               updatedquotationtype();
-              console.log("hello ")
+              console.log("hello ");
             }
-            window.location.reload('')
+            window.location.reload("");
           }
         });
       } catch (error) {
@@ -202,8 +193,7 @@ function Quotedetails() {
   const getquotepage = async () => {
     let res = await axios.get(apiURL + `/getenquiryquote/${EnquiryId}`);
     if ((res.status = 200)) {
-      setquotepagedata(
-        res.data?.enquiryadd);
+      setquotepagedata(res.data?.enquiryadd);
     }
   };
   const gettreatment = async () => {
@@ -360,7 +350,7 @@ function Quotedetails() {
     }
   };
 
-  console.log("quotedata[0]?._id", quotedata[0]?._id)
+  console.log("quotedata[0]?._id", quotedata[0]?._id);
   const updatequote = async (e) => {
     e.preventDefault();
 
@@ -418,7 +408,7 @@ function Quotedetails() {
       : totalWithGST - parseFloat(adjustments) || totalWithGST;
     // Update the netTotal state
     setnetTotal(adjustedNetTotal);
-  }, [adjustments, Gst,]);
+  }, [adjustments, Gst]);
 
   const postconvertcustomer = async (e) => {
     e.preventDefault();
@@ -439,15 +429,15 @@ function Quotedetails() {
             `/customersearchdetailsqote/${customerData?._id}/${enquirydata[0]?.EnquiryId}?${queryString}`,
             "_blank"
           );
-
         } else {
           console.log("Phone number not available");
           const queryString = new URLSearchParams({
             enquiryData: JSON.stringify(enquirydata[0]),
           }).toString();
-       
-          navigate(`/convertcustomer/${enquirydata[0]?.EnquiryId}?${queryString}`);
 
+          navigate(
+            `/convertcustomer/${enquirydata[0]?.EnquiryId}?${queryString}`
+          );
         }
       }
     } catch (error) {
@@ -455,7 +445,7 @@ function Quotedetails() {
       const queryString = new URLSearchParams({
         enquiryData: JSON.stringify(enquirydata[0]),
       }).toString();
-   
+
       navigate(`/convertcustomer/${enquirydata[0]?.EnquiryId}?${queryString}`);
 
       // Handle errors accordingly
@@ -533,10 +523,9 @@ function Quotedetails() {
     quotedata[0]?.netTotal !== null && quotedata[0]?.netTotal !== undefined
       ? quotedata[0]?.netTotal
       : Gst
-        ? total + total * 0.05 - adjustments
-        : total - adjustments
+      ? total + total * 0.05 - adjustments
+      : total - adjustments
   );
-
 
   const [whatsappdata, setwhatsappdata] = useState([]);
 
@@ -548,7 +537,6 @@ function Quotedetails() {
     try {
       let res = await axios.get(apiURL + "/getwhatsapptemplate");
       if (res.status === 200) {
-
         let getTemplateDatails = res.data?.whatsapptemplate?.filter(
           (item) => item.templatename === "Send Quotation"
         );
@@ -566,13 +554,8 @@ function Quotedetails() {
       const a = "SHARED";
       if (quotedata[0]?.type !== "Confirmed") {
         updatedquotationtype(a);
-
       }
-      makeApiCall(
-        selectedResponse,
-        quotepagedata[0]?.mobile,
-        invoiceLink
-      );
+      makeApiCall(selectedResponse, quotepagedata[0]?.mobile, invoiceLink);
     } else {
       console.error("whatsappdata is empty. Cannot proceed.");
       alert("Not Added");
@@ -581,7 +564,6 @@ function Quotedetails() {
   };
 
   const updatedquotationtype = async (a) => {
-
     try {
       const config = {
         url: `/findwithidupdatetype/${quotedata[0]?._id}`,
@@ -591,19 +573,16 @@ function Quotedetails() {
         headers: { "content-type": "application/json" },
         data: {
           type: a === "SHARED" ? "QUOTE SHARED" : "CONFIRMED",
-
         },
       };
       await axios(config).then(function (response) {
         if (response.status === 200) {
-
         }
       });
     } catch (error) {
       console.error(error);
       alert(" Not Added");
     }
-
   };
 
   const makeApiCall = async (selectedResponse, contactNumber, invoiceId) => {
@@ -623,7 +602,10 @@ function Quotedetails() {
       quotepagedata[0]?.name
     );
 
-    const serviceName = content.replace(/\{Service_name\}/g, quotepagedata[0]?.treatmentdetails[0]?.category);
+    const serviceName = content.replace(
+      /\{Service_name\}/g,
+      quotepagedata[0]?.treatmentdetails[0]?.category
+    );
 
     const serivePrice = serviceName.replace(
       /\{Executive_name\}/g,
@@ -646,34 +628,22 @@ function Quotedetails() {
       .replace(/<strong>(.*?)<\/strong>/g, "<b>$1</b>")
       .replace(/<[^>]*>/g, "");
 
-    const requestData = [
-      {
-        dst: "91" + contactNumber,
-        messageType: "0",
-        textMessage: {
-          content: convertedText,
-        },
-      },
-    ];
     try {
-      const response = await axios.post(apiURL, requestData, {
-        headers: {
-          "access-token": accessToken,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        "https://api.vijayhomeservicebengaluru.in/send-message",
+        {
+          mobile: contactNumber,
+          msg: convertedText,
+        }
+      );
 
       if (response.status === 200) {
-        alert("Sent");
-        // window.location.reload();
-      } else {
-        console.error("API call unsuccessful. Status code:", response.status);
+        alert("Whats app message sent successfully");
       }
     } catch (error) {
-      console.error("Error making API call:", error);
+      console.error(error);
     }
   };
-
 
   return (
     <div className="web">
@@ -723,31 +693,27 @@ function Quotedetails() {
                     ""
                   )}
                 </div>
-                {advpaymentdata?.amount ?
+                {advpaymentdata?.amount ? (
                   <p>
-                    <b>
-                      Advance Payment :
-                      {advpaymentdata?.amount}
-                    </b>
-                  </p> : ""}
-                {advpaymentdata?.paymentDate
-                  ?
+                    <b>Advance Payment :{advpaymentdata?.amount}</b>
+                  </p>
+                ) : (
+                  ""
+                )}
+                {advpaymentdata?.paymentDate ? (
                   <p>
-                    <b>
-                      Adv Payment Date :
-                      {advpaymentdata?.paymentDate}
-
-                    </b>
-                  </p> : ""}
-                {advpaymentdata?.paymentMode ?
+                    <b>Adv Payment Date :{advpaymentdata?.paymentDate}</b>
+                  </p>
+                ) : (
+                  ""
+                )}
+                {advpaymentdata?.paymentMode ? (
                   <p>
-                    <b>
-                      Adv Payment mode :
-
-                      {advpaymentdata?.paymentMode}
-
-                    </b>
-                  </p> : ""}
+                    <b>Adv Payment mode :{advpaymentdata?.paymentMode}</b>
+                  </p>
+                ) : (
+                  ""
+                )}
 
                 <hr />
                 <div className="row">

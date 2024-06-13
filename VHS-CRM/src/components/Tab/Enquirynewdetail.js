@@ -96,7 +96,7 @@ function Enquirynewdetail(props) {
         if (response.status === 200) {
           makeApiCall(whatsappTemplate, enquiryData?.mobile);
           getenquiryfollowup();
-          // window.location.reload(`  `); 
+          // window.location.reload(`  `);
         }
       });
     } catch (error) {
@@ -136,6 +136,7 @@ function Enquirynewdetail(props) {
             // console.log("success");
             getenquiryfollowup();
             alert(" Added");
+
             makeApiCall(whatsappTemplate, enquiryData?.mobile);
 
             // window.location.assign(`/enquirydetail/${EnquiryId}?${urlParams}`);
@@ -176,10 +177,8 @@ function Enquirynewdetail(props) {
         await axios(config).then(function (response) {
           if (response.status === 200) {
             getenquiryfollowup();
-            
-            makeApiCall(whatsappTemplate, enquiryData?.mobile);
 
-            
+            makeApiCall(whatsappTemplate, enquiryData?.mobile);
           }
         });
       } catch (error) {
@@ -217,7 +216,7 @@ function Enquirynewdetail(props) {
           if (response.status === 200) {
             makeApiCall(whatsappTemplate, enquiryData?.mobile);
             getenquiryfollowup();
-            // navigate(`/convertcustomer/${EnquiryId}?${urlParams}`);
+            navigate(`/convertcustomer/${EnquiryId}?${urlParams}`);
           }
         });
       } catch (error) {
@@ -226,7 +225,7 @@ function Enquirynewdetail(props) {
       }
     }
   };
-console.log("whatsappTemplate---",whatsappTemplate,enquiryData?.mobile)
+  console.log("whatsappTemplate---", whatsappTemplate, enquiryData?.mobile);
   // Quote
   const postcreatequote = async (e) => {
     e.preventDefault();
@@ -293,7 +292,6 @@ console.log("whatsappTemplate---",whatsappTemplate,enquiryData?.mobile)
     navigate(`/editenquiry/${data}`);
   };
 
-
   function getColor(colorcode) {
     if (colorcode === "easy") {
       return "#ffb9798f";
@@ -306,15 +304,71 @@ console.log("whatsappTemplate---",whatsappTemplate,enquiryData?.mobile)
     }
   }
 
+  // const makeApiCall = async (selectedResponse, contactNumber) => {
+  //   console.log("heelo yogesh gi ");
+  //   const apiURL = "http://private.itswhatsapp.com/wapp/api/send";
+  //   const accessToken = "ed90cfb9843241b3afb223e56e64aa0c";
+
+  //   const contentTemplate = selectedResponse?.template || "";
+  //   const executivename = admin.displayname || "";
+
+  //   if (!contentTemplate) {
+  //     console.error("Content template is empty. Cannot proceed.");
+  //     return;
+  //   }
+
+  //   const content = contentTemplate.replace(
+  //     /\{Customer_name\}/g,
+  //     enquiryData?.name
+  //   );
+
+  //   const contentWithNames = content.replace(
+  //     /\{Executive_name\}/g,
+  //     admin?.displayname
+  //   );
+
+  //   const contentWithMobile = contentWithNames.replace(
+  //     /Executive_contact/gi,
+  //     admin?.contactno
+  //   );
+
+  //   // Replace <p> with line breaks and remove HTML tags
+  //   const convertedText = contentWithMobile
+  //     .replace(/<p>/g, "\n")
+  //     .replace(/<\/p>/g, "")
+  //     .replace(/<br>/g, "\n")
+  //     .replace(/&nbsp;/g, "")
+  //     .replace(/<strong>(.*?)<\/strong>/g, "<b>$1</b>")
+  //     .replace(/<[^>]*>/g, "");
+
+  //   const requestData = {
+  //     apikey: "ed90cfb9843241b3afb223e56e64aa0c",
+  //     mobile: "6363022752",
+  //     msg: convertedText,
+  //   };
+
+  //   try {
+  //     const response = await axios.post(apiURL, requestData, {
+  //       headers: {
+  //         params: requestData,
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+
+  //     if (response.status === 200) {
+  //       // window.location.assign(`/enquirydetail/${EnquiryId}?${urlParams}`);
+  //       window.location.reload(`  `);
+  //     } else {
+  //       console.error("API call unsuccessful. Status code:", response.status);
+  //     }
+  //   } catch (error) {
+  //     // alert(error.message)
+  //     console.error("Error making API call:", error.message);
+  //   }
+  // };
   const makeApiCall = async (selectedResponse, contactNumber) => {
-    console.log("heelo yogesh gi ")
-    const apiURL =
-      "https://wa.chatmybot.in/gateway/waunofficial/v1/api/v2/message";
-    const accessToken = "c7475f11-97cb-4d52-9500-f458c1a377f4";
-
     const contentTemplate = selectedResponse?.template || "";
-    const executivename=admin.displayname || "";
-
+    const executivename = admin.displayname || "";
 
     if (!contentTemplate) {
       console.error("Content template is empty. Cannot proceed.");
@@ -326,14 +380,11 @@ console.log("whatsappTemplate---",whatsappTemplate,enquiryData?.mobile)
       enquiryData?.name
     );
 
-
     const contentWithNames = content.replace(
-    
       /\{Executive_name\}/g,
       admin?.displayname
     );
-    
-  
+
     const contentWithMobile = contentWithNames.replace(
       /Executive_contact/gi,
       admin?.contactno
@@ -348,34 +399,22 @@ console.log("whatsappTemplate---",whatsappTemplate,enquiryData?.mobile)
       .replace(/<strong>(.*?)<\/strong>/g, "<b>$1</b>")
       .replace(/<[^>]*>/g, "");
 
-     
+    console.log("convertedText===", convertedText);
 
-    const requestData = [
-      {
-        dst: "91" + contactNumber,
-        messageType: "0",
-        textMessage: {
-          content: convertedText,
-        },
-      },
-    ];
     try {
-      const response = await axios.post(apiURL, requestData, {
-        headers: {
-          "access-token": accessToken,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        "https://api.vijayhomeservicebengaluru.in/send-message",
+        {
+          mobile: contactNumber,
+          msg: convertedText,
+        }
+      );
 
       if (response.status === 200) {
-        // window.location.assign(`/enquirydetail/${EnquiryId}?${urlParams}`);
-        window.location.reload(`  `); 
-      } else {
-        console.error("API call unsuccessful. Status code:", response.status);
+        window.location.reload(``);
       }
     } catch (error) {
-      // alert(error.message)
-      console.error("Error making API call:", error.message);
+      console.error(error);
     }
   };
 

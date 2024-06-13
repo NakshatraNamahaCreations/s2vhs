@@ -805,21 +805,20 @@ function Dsrdetails() {
       },
     ];
     try {
-      const response = await axios.post(apiURL, requestData, {
-        headers: {
-          "access-token": accessToken,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        "https://api.vijayhomeservicebengaluru.in/send-message",
+        {
+          mobile: contactNumber,
+          msg: convertedText,
+        }
+      );
 
       if (response.status === 200) {
         setWhatsappTemplate(response.data);
-        alert("Sent");
-      } else {
-        console.error("API call unsuccessful. Status code:", response.status);
+        // window.location.reload("");
       }
     } catch (error) {
-      console.error("Error making API call:", error);
+      console.error(error);
     }
   };
 
@@ -860,22 +859,14 @@ function Dsrdetails() {
       .replace(/<strong>(.*?)<\/strong>/g, "<b>$1</b>")
       .replace(/<[^>]*>/g, "");
 
-    const requestData = [
-      {
-        dst: "91" + contactNumber,
-        messageType: "0",
-        textMessage: {
-          content: convertedText,
-        },
-      },
-    ];
     try {
-      const response = await axios.post(apiURL, requestData, {
-        headers: {
-          "access-token": accessToken,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        "https://api.vijayhomeservicebengaluru.in/send-message",
+        {
+          mobile: contactNumber,
+          msg: convertedText,
+        }
+      );
 
       if (response.status === 200) {
         setWhatsappTemplate(response.data);
@@ -990,23 +981,40 @@ function Dsrdetails() {
         },
       },
     ];
+
     try {
-      const response = await axios.post(apiURL, requestData, {
-        headers: {
-          "access-token": accessToken,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        "https://api.vijayhomeservicebengaluru.in/send-message",
+        {
+          mobile: contactNumber,
+          msg: convertedText,
+        }
+      );
 
       if (response.status === 200) {
         setWhatsappTemplate(response.data);
         window.location.assign(`/dsrcallist/${data1}/${data.category}`);
-      } else {
-        console.error("API call unsuccessful. Status code:", response.status);
       }
     } catch (error) {
-      console.error("Error making API call:", error);
+      console.error(error);
     }
+    // try {
+    //   const response = await axios.post(apiURL, requestData, {
+    //     headers: {
+    //       "access-token": accessToken,
+    //       "Content-Type": "application/json",
+    //     },
+    //   });
+
+    //   if (response.status === 200) {
+    //     setWhatsappTemplate(response.data);
+    //     window.location.assign(`/dsrcallist/${data1}/${data.category}`);
+    //   } else {
+    //     console.error("API call unsuccessful. Status code:", response.status);
+    //   }
+    // } catch (error) {
+    //   console.error("Error making API call:", error);
+    // }
   };
 
   const whatsappreschedule = async (

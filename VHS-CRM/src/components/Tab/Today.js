@@ -26,34 +26,21 @@ function Today() {
   const [searchResponse, setSearchResponse] = useState("");
   const [searchDesc, setSearchDesc] = useState("");
   const [searchNxtfoll, setSearchNxtfoll] = useState("");
-  const [flwdata, setflwdata] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(25);
 
   useEffect(() => {
     getenquiry();
-    getenquiryfollowup();
   }, []);
 
   const getenquiry = async () => {
     let res = await axios.get(apiURL + "/getenquiry12");
     if ((res.status = 200)) {
-     const reverseArray = res.data?.enquiryadd.reverse()
+      const reverseArray = res.data?.enquiryadd.reverse();
       setfilterdata(reverseArray);
 
       setSearchResults(res.data?.enquiryadd);
-    }
-  };
-
-  const getenquiryfollowup = async () => {
-    try {
-      let res = await axios.get(apiURL + `/getenquiryfollowup`);
-      if ((res.status = 200)) {
-        setflwdata(res.data?.enquiryfollowup);
-      }
-    } catch (error) {
-      console.log("Error", error);
     }
   };
 
@@ -66,7 +53,6 @@ function Today() {
       "_blank"
     );
   };
-
 
   useEffect(() => {
     const filterResults = () => {
@@ -152,21 +138,27 @@ function Today() {
         results = results.filter(
           (item) =>
             item?.enquiryfollowData[0]?.staffname &&
-            item.enquiryfollowData[0]?.staffname.toLowerCase().includes(searchStaff.toLowerCase())
+            item.enquiryfollowData[0]?.staffname
+              .toLowerCase()
+              .includes(searchStaff.toLowerCase())
         );
       }
       if (searchResponse) {
         results = results.filter(
           (item) =>
             item.enquiryfollowData[0]?.response &&
-            item.enquiryfollowData[0]?.response.toLowerCase().includes(searchResponse.toLowerCase())
+            item.enquiryfollowData[0]?.response
+              .toLowerCase()
+              .includes(searchResponse.toLowerCase())
         );
       }
       if (searchDesc) {
         results = results.filter(
           (item) =>
             item.enquiryfollowData[0]?.desc &&
-            item.enquiryfollowData[0]?.desc.toLowerCase().includes(searchDesc.toLowerCase())
+            item.enquiryfollowData[0]?.desc
+              .toLowerCase()
+              .includes(searchDesc.toLowerCase())
         );
       }
       if (searchNxtfoll) {
@@ -210,27 +202,6 @@ function Today() {
       return "transparent";
     }
   }
-  // Pagination logic
-  // const totalPages = Math.ceil(searchResults.length / itemsPerPage);
-  // const pageOptions = Array.from(
-  //   { length: totalPages },
-  //   (_, index) => index + 1
-  // );
-
-  // Get current items for the current page
-  // const indexOfLastItem = currentPage * itemsPerPage;
-  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  // const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
-
-  // console.log("currentItems=======", currentItems);
-
-  // Change page
-  const handlePageChange = (selectedPage) => {
-    setCurrentPage(selectedPage);
-  };
-
-
- 
 
   return (
     <div>
@@ -240,13 +211,10 @@ function Today() {
 
       <div className="row m-auto">
         <div className="col-md-12">
-        
           <table>
             <thead>
               <tr className="bg ">
-                <th scope="col">
-                 
-                </th>
+                <th scope="col"></th>
                 <th scope="col">
                   {" "}
                   <select
@@ -348,43 +316,51 @@ function Today() {
                   />
                 </th>
                 <th scope="col">
-                <select
+                  <select
                     className="vhs-table-input"
                     value={searchStaff}
                     onChange={(e) => setSearchStaff(e.target.value)}
                   >
                     <option value="">Select</option>
-                    {[...new Set(filterdata?.map((i) => i.enquiryfollowData[0]?.staffname))].map(
-                      (uniqueexe) => (
-                        <option value={uniqueexe} key={uniqueexe}>
-                          {uniqueexe}
-                        </option>
-                      )
-                    )}
+                    {[
+                      ...new Set(
+                        filterdata?.map(
+                          (i) => i.enquiryfollowData[0]?.staffname
+                        )
+                      ),
+                    ].map((uniqueexe) => (
+                      <option value={uniqueexe} key={uniqueexe}>
+                        {uniqueexe}
+                      </option>
+                    ))}
                   </select>{" "}
                   {/* <input placeholder="Excutive" value={searchStaff}  onChange={(e) => setSearchStaff(e.target.value)} className="vhs-table-input" /> */}
                 </th>
                 <th scope="col">
-                <select
+                  <select
                     className="vhs-table-input"
                     value={searchResponse}
                     onChange={(e) => setSearchResponse(e.target.value)}
                   >
                     <option value="">Select</option>
-                    {[...new Set(filterdata?.map((i) => i.enquiryfollowData[0]?.response))].map(
-                      (uniqueexe) => (
-                        <option value={uniqueexe} key={uniqueexe}>
-                          {uniqueexe}
-                        </option>
-                      )
-                    )}
+                    {[
+                      ...new Set(
+                        filterdata?.map((i) => i.enquiryfollowData[0]?.response)
+                      ),
+                    ].map((uniqueexe) => (
+                      <option value={uniqueexe} key={uniqueexe}>
+                        {uniqueexe}
+                      </option>
+                    ))}
                   </select>{" "}
                 </th>
                 <th scope="col">
-                  <input placeholder="Desc" 
+                  <input
+                    placeholder="Desc"
                     className="vhs-table-input"
                     value={searchDesc}
-                    onChange={(e) => setSearchDesc(e.target.value)}  />
+                    onChange={(e) => setSearchDesc(e.target.value)}
+                  />
                 </th>
               </tr>
               <tr className="bg">

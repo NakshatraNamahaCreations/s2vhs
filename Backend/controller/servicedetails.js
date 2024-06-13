@@ -7,57 +7,6 @@ const moment = require("moment");
 const mongoose = require("mongoose");
 const recheduledatasmodel = require("../model/rescheduledata");
 const automatedServiceModel = require("../model/Automated");
-const { firebase } = require("../firebase");
-const technicianmodel = require("../model/master/technician");
-
-const sendNotificationToMultipleDevices = async () => {
-  try {
-    // Fetch FCM tokens from the database
-    const vendors = await technicianmodel.find({}).select("fcmtoken");
-    console.log("vendors--", vendors);
-
-    // Check if vendors array is not empty
-    if (!vendors || vendors.length === 0) {
-      console.log("No vendors found");
-      return;
-    }
-
-    // Loop through each vendor and send the notification
-    const notificationPromises = vendors.map(async (vendor) => {
-      try {
-        await firebase.messaging().send({
-          token: vendor.fcmtoken,
-          notification: {
-            title: "Hey you earned money",
-            body: "hey suman love you",
-          },
-          data: {
-            navigationId: "login",
-            chatId: "12345",
-          },
-        });
-        console.log(
-          `Notification sent successfully to vendor with FCM token: ${vendor.fcmtoken}`
-        );
-      } catch (error) {
-        console.error(
-          `Error sending notification to vendor with FCM token ${vendor.fcmtoken}:`,
-          error
-        );
-      }
-    });
-
-    // Wait for all notifications to be sent
-    const results = await Promise.all(notificationPromises);
-
-    // Log results
-    results.forEach((res, index) => {
-      console.log(`Notification ${index + 1} sent successfully:`, res);
-    });
-  } catch (error) {
-    console.log("Error sending FCM notification:", error);
-  }
-};
 
 class servicedetails {
   async getvendodata(req, res) {
@@ -599,13 +548,100 @@ class servicedetails {
     }
   }
 
+  // async getpaymentfilterdatewise(req, res) {
+  //   try {
+  //     const { date, page } = req.query;
+
+  //     const pageSize = 10; // Adjust based on your requirements
+  //     const skip = ((parseInt(page) || 1) - 1) * pageSize;
+  //     const pipeline = [
+  //       {
+  //         $match: {
+  //           dividedamtDates: {
+  //             $elemMatch: {
+  //               date: date,
+  //             },
+  //           },
+  //         },
+  //       },
+  //       {
+  //         $lookup: {
+  //           from: "addcalls",
+  //           localField: "_id",
+  //           foreignField: "serviceId",
+  //           as: "dsrdata",
+  //         },
+  //       },
+
+  //       {
+  //         $lookup: {
+  //           from: "payments",
+  //           localField: "userId",
+  //           foreignField: "customer",
+  //           as: "paymentData",
+  //         },
+  //       },
+
+  //       {
+  //         $project: {
+  //           _id: 1,
+  //           customerData: 1,
+  //           category: 1,
+  //           city: 1,
+  //           type: 1,
+  //           deliveryAddress: 1,
+  //           service: 1,
+  //           desc: 1,
+  //           paymentMode: 1,
+  //           dividedamtCharges: 1,
+  //           GrandTotal: 1,
+  //           contractType: 1,
+  //           "dsrdata.jobComplete": 1,
+  //           "dsrdata.TechorPMorVendorName": 1,
+  //           "paymentData.paymentType": 1,
+  //           "paymentData.paymentDate": 1,
+  //           "paymentData.serviceId": 1,
+  //           "paymentData.serviceDate": 1,
+  //           "paymentData.amount": 1,
+  //           "paymentData.paymentMode": 1,
+  //         },
+  //       },
+  //       { $skip: skip },
+  //       { $limit: pageSize },
+  //     ];
+
+  //     const data = await servicedetailsmodel.aggregate(pipeline);
+
+  //     if (data && data.length > 0) {
+  //       return res.json({
+  //         runningdata: data,
+  //       });
+  //     } else {
+  //       return res.status(404).json({ message: "No data found" });
+  //     }
+  //   } catch (error) {
+  //     console.error(error.message);
+  //     return res
+  //       .status(500)
+  //       .json({ error: error.message || "Something went wrong" });
+  //   }
+  // }
+
   async getpaymentfilterdatewise(req, res) {
     try {
-      const { date, page } = req.query;
+      const {
+        date,
+        page,
+        searchCustomerName,
+        searchJobCatagory,
+        city,
+        searchAddress,
+        searchContact,
+        searchTechName,
+      } = req.query;
 
       const pageSize = 10; // Adjust based on your requirements
-      const skip = (parseInt(page) || 1 - 1) * pageSize;
-
+      const skip = ((parseInt(page) || 1) - 1) * pageSize;
       const pipeline = [
         {
           $match: {
@@ -614,8 +650,43 @@ class servicedetails {
                 date: date,
               },
             },
+            // Apply search filters if provided
+            $and: [
+              searchJobCatagory
+                ? { category: { $regex: searchJobCatagory, $options: "i" } }
+                : {},
+              searchCustomerName
+                ? {
+                    "customerData.customerName": {
+                      $regex: searchCustomerName,
+                      $options: "i",
+                    },
+                  }
+                : {},
+              city ? { city: { $regex: city, $options: "i" } } : {},
+              searchAddress
+                ? { reference: { $regex: searchAddress, $options: "i" } }
+                : {},
+              searchContact
+                ? {
+                    "customerData.mainContact": {
+                      $regex: searchContact,
+                      $options: "i",
+                    },
+                  }
+                : {},
+              searchTechName
+                ? {
+                    "dsrdata.TechorPMorVendorName": {
+                      $regex: searchTechName,
+                      $options: "i",
+                    },
+                  }
+                : {},
+            ],
           },
         },
+        // Your existing pipeline stages
         {
           $lookup: {
             from: "addcalls",
@@ -624,7 +695,6 @@ class servicedetails {
             as: "dsrdata",
           },
         },
-
         {
           $lookup: {
             from: "payments",
@@ -658,6 +728,9 @@ class servicedetails {
             "paymentData.paymentMode": 1,
           },
         },
+        // Add other pipeline stages
+        { $skip: skip },
+        { $limit: pageSize },
       ];
 
       const data = await servicedetailsmodel.aggregate(pipeline);
@@ -1288,7 +1361,6 @@ class servicedetails {
       });
 
       if (check?.action == true) {
-        sendNotificationToMultipleDevices();
       }
 
       if (save) {

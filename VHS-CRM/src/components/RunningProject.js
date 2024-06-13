@@ -320,6 +320,8 @@ function RunningProject() {
   function calculatePendingPaymentAmount(paymentData, serviceCharge) {
     const totalAmount = calculateTotalPaymentAmount(paymentData);
     const pendingAmount = parseFloat(serviceCharge) - totalAmount;
+
+    console.log("totalAmount,pendingAmount", totalAmount, pendingAmount);
     return pendingAmount.toFixed(2); // Format the pending amount with two decimal places
   }
 

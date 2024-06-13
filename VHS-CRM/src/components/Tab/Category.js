@@ -58,7 +58,6 @@ function Category() {
     }
   };
 
-
   const editcategory = async (e) => {
     e.preventDefault();
     try {

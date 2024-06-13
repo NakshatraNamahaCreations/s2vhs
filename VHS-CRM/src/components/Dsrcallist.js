@@ -775,7 +775,7 @@ function Dsrcallist() {
                           : selectedData.GrandTotal}
                       </td>
 
-                      {selectedData?.type === "userapp" ? (
+                      {selectedData.paymentMode ? (
                         <td>{selectedData.paymentMode}</td>
                       ) : (
                         <td>{SERVICEMode(selectedData)}</td>

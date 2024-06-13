@@ -1,4 +1,52 @@
 const manualModel = require("../../model/vendorapp/manual");
+const technicianmodel = require("../../model/vendorapp/manual");
+const { firebase } = require("../../firebase");
+
+const sendNotificationToMultipleDevices = async () => {
+  try {
+    // Fetch FCM tokens from the database
+    const vendors = await technicianmodel.find({}).select("fcmtoken");
+
+    const filterdata = vendors.filter((i) => i.fcmtoken);
+    // Check if vendors array is not empty
+    if (!vendors || vendors.length === 0) {
+      console.log("No vendors found");
+      return;
+    }
+
+    // Loop through each vendor and send the notification
+    const notificationPromises = filterdata.map(async (vendor) => {
+      try {
+        await firebase.messaging().send({
+          token: vendor.fcmtoken,
+          notification: {
+            title: "Job alert",
+            body: "New job assigned from crm please check",
+          },
+          data: {
+            navigationId: "login",
+            chatId: "12345",
+          },
+        });
+      } catch (error) {
+        console.error(
+          `Error sending notification to vendor with FCM token ${vendor.fcmtoken}:`,
+          error
+        );
+      }
+    });
+
+    // Wait for all notifications to be sent
+    const results = await Promise.all(notificationPromises);
+
+    // Log results
+    results.forEach((res, index) => {
+      console.log(`Notification ${index + 1} sent successfully:`, res);
+    });
+  } catch (error) {
+    console.log("Error sending FCM notification:", error);
+  }
+};
 
 class ManualJobs {
   async addjobs(req, res) {
@@ -98,6 +146,7 @@ class ManualJobs {
       const savedCustomer = await customer.save();
 
       if (savedCustomer) {
+        sendNotificationToMultipleDevices();
         return res.json({ success: "dsr data added successfully" });
       }
     } catch (error) {

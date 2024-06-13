@@ -1,6 +1,5 @@
 const enquiryfollowupModel = require("../model/enquiryfollowup");
 const moment = require("moment");
-const { ObjectId } = require("mongodb");
 
 class addenquiry {
   async findWithUserIdInEnquiryFollowup(req, res) {
@@ -341,7 +340,7 @@ class addenquiry {
 
   async postsurveycat(req, res) {
     try {
-      const { category } = req.body;
+      const { category, startDate, endDate } = req.body;
 
       const data = await enquiryfollowupModel
         .find({
@@ -365,9 +364,15 @@ class addenquiry {
       const result = Object.values(latestRecords).filter(
         (item) => item.response === "Survey"
       );
+      const data1 = result.filter((i) => {
+        const nxtfollDate = new Date(i.nxtfoll);
+        return (
+          nxtfollDate >= new Date(startDate) && nxtfollDate <= new Date(endDate)
+        );
+      });
 
       if (result.length > 0) {
-        return res.json({ enquiryfollowup: result });
+        return res.json({ enquiryfollowup: data1 });
       } else {
         console.log("No survey responses found");
         return res.json({ enquiryfollowup: [] });
@@ -532,7 +537,6 @@ class addenquiry {
         (item) => item.response === "New"
       );
 
-      console.log("latestSurveyData---new", latestSurveyData);
       return res.json({ enquiryfollowup: latestSurveyData });
     } catch (error) {
       console.error("Error in getflwdata:", error);

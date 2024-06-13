@@ -4,7 +4,6 @@ const servicedetailsmodel = require("../model/servicedetails");
 const technicianmodel = require("../model/master/technician");
 const vPenaltymodel = require("../model/vpenalty");
 const moment = require("moment");
-const { firebase } = require("../firebase");
 const manualModel = require("../model/vendorapp/manual");
 
 function isSameDate(date1, date2) {
@@ -36,26 +35,6 @@ function getWeekNumber(date) {
 
   return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
 }
-
-const sendNotification = async (token) => {
-  console.log("token", token);
-  try {
-    let res = await firebase.messaging().send({
-      token: token,
-      notification: {
-        title: "Hey you earned money",
-        body: "hey suman love you",
-      },
-      data: {
-        navigationId: "login",
-        chatId: "12345",
-      },
-    });
-    console.log("notifincatiojn send succesfully", res);
-  } catch (error) {
-    console.log("erro fcm send noification", error);
-  }
-};
 
 class addcall {
   async outsideVendorassignwithcrm(req, res) {
@@ -254,7 +233,6 @@ class addcall {
           );
 
           if (save) {
-            sendNotification(fcmtoken);
             const data1 = await addcallModel.deleteOne({ _id: data?._id });
             res.status(200).json({
               success: true,

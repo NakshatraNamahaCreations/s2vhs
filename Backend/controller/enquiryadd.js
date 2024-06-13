@@ -2,19 +2,16 @@ const moment = require("moment");
 const enquiryaddmodel = require("../model/enquiryadd");
 const enquiryfollowupModel = require("../model/enquiryfollowup");
 
-
 class addenquiry {
-
-
   async getallenquirycount(req, res) {
     try {
       // Get the start and end dates for today
-      const todayStart = moment().startOf('day').toDate();
-      const todayEnd = moment().endOf('day').toDate();
+      const todayStart = moment().startOf("day").toDate();
+      const todayEnd = moment().endOf("day").toDate();
 
       // Get the start and end dates for this week
-      const thisWeekStart = moment().startOf('isoWeek').toDate();
-      const thisWeekEnd = moment().endOf('isoWeek').toDate();
+      const thisWeekStart = moment().startOf("isoWeek").toDate();
+      const thisWeekEnd = moment().endOf("isoWeek").toDate();
 
       // Count the documents for today
       const totalEnquiriesToday = await enquiryaddmodel.countDocuments({
@@ -268,9 +265,9 @@ class addenquiry {
         {
           $match: {
             EnquiryId: {
-              $eq: parseInt(enquiryid, 10) // Convert string to integer
-            }
-          }
+              $eq: parseInt(enquiryid, 10), // Convert string to integer
+            },
+          },
         },
 
         {
@@ -299,14 +296,11 @@ class addenquiry {
         },
       ]);
       if (quote) {
-
         return res.json({ enquiryadd: quote });
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-
-
   }
 
   async getEnquiryAndAggregate(req, res) {
@@ -351,22 +345,24 @@ class addenquiry {
 
   async getallnewfollow(req, res) {
     try {
-      let result = await enquiryaddmodel.aggregate([
-        {
-          $lookup: {
-            from: "enquiryfollowups",
-            localField: "EnquiryId",
-            foreignField: "EnquiryId",
-            as: "enquiryFollow",
+      let result = await enquiryaddmodel
+        .aggregate([
+          {
+            $lookup: {
+              from: "enquiryfollowups",
+              localField: "EnquiryId",
+              foreignField: "EnquiryId",
+              as: "enquiryFollow",
+            },
           },
-        },
-        {
-          $match: {
-            enquiryFollow: { $eq: [] },
+          {
+            $match: {
+              enquiryFollow: { $eq: [] },
+            },
           },
-        },
-      ]).exec(); // Add exec here
-  
+        ])
+        .exec(); // Add exec here
+
       if (result) {
         return res.json({ enquiryadd: result });
       }
@@ -376,7 +372,6 @@ class addenquiry {
       return res.status(500).json({ error: "Something went wrong" });
     }
   }
-  
 
   async findWithEnquiryID(req, res) {
     try {
@@ -507,7 +502,6 @@ class addenquiry {
     }
   }
 
-
   async getenquiryfilter1(req, res) {
     try {
       const {
@@ -571,18 +565,17 @@ class addenquiry {
         { $sort: { _id: -1 } },
       ]);
 
-
-
       if (response) {
         let edta;
         if (data) {
-          const filteredData = data.filter(entry => entry.enquiryFollow.some(item => item.response.includes(response)));
-          console.log("first---")
+          const filteredData = data.filter((entry) =>
+            entry.enquiryFollow.some((item) => item.response.includes(response))
+          );
+          console.log("first---");
           return res.status(200).json({ enquiryadd: filteredData });
         } else {
-          console.log("seconde---")
+          console.log("seconde---");
           return res.status(200).json({ enquiryadd: data });
-
         }
       } else {
         return res.status(200).json({ enquiryadd: data });
@@ -616,10 +609,16 @@ class addenquiry {
     return res.json({ success: "Delete Successf" });
   }
 
-
   async getallenquiryadd12(req, res) {
     try {
+      const currentDate = moment().format("MM-DD-YYYY");
+
       const data = await enquiryaddmodel.aggregate([
+        {
+          $match: {
+            date: currentDate,
+          },
+        },
         {
           $lookup: {
             from: "enquiryfollowups",
@@ -635,28 +634,13 @@ class addenquiry {
         },
       ]);
 
-      // Filter data for today's date
-      const filteringTodaysData = data.filter(
-        (item) =>
-          moment(item.date).format("DD-MM-YYYY") ===
-          moment(new Date()).format("DD-MM-YYYY")
-      );
-
       // Return the filtered and sorted data
-      return res.json({ enquiryadd: filteringTodaysData });
+      return res.json({ enquiryadd: data });
     } catch (error) {
-      console.error('Error:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+      console.error("Error:", error);
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
-
-
-
-
-
-
-
-
 }
 const enquiryaddcontroller = new addenquiry();
 module.exports = enquiryaddcontroller;
